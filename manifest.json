@@ -1,0 +1,10 @@
+{
+  "id": "swipe-words",
+  "name": "Swipe Words",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "swipe words to remember",
+  "author": "LeafChage",
+  "authorUrl": "https://github.com/LeafChage",
+  "isDesktopOnly": false
+}
