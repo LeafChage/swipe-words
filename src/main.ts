@@ -1,17 +1,26 @@
 import { Plugin } from 'obsidian';
 import { SwipeWordsView, SwipeWordsViewType } from './obsidian/view';
+import { DEFAULT_SETTINGS, type SwipeWordsPluginSettings } from './obsidian/settings';
+import { SwipeWordsluginSettingTab } from './obsidian/settings-tab';
 
-export class SwipeWordsPlugin extends Plugin {
+export interface OfferableSetting {
+  settings: Partial<SwipeWordsPluginSettings>;
+}
+
+export interface SaveableSetting extends OfferableSetting {
+  saveSetting<
+    K extends keyof SwipeWordsPluginSettings,
+    V extends SwipeWordsPluginSettings[K]
+  >(key: K, value: V): Promise<void>
+}
+
+export class SwipeWordsPlugin extends Plugin implements SaveableSetting {
+  public settings: Partial<SwipeWordsPluginSettings> = {};
+
   public override onload = async () => {
     await this.loadSettings();
-    // this.appHelper = new AppHelper(this.app);
 
-    this.registerView(SwipeWordsViewType, (leaf) => new SwipeWordsView(leaf));
-    this.addRibbonIcon("dice", "Swipe Word", () => {
-      console.log("onload");
-      this.activateView();
-    });
-
+    this.registerView(SwipeWordsViewType, (leaf) => new SwipeWordsView(leaf, this));
     this.addCommand({
       id: "swipe-words-open-view",
       name: "Open Swipe words view",
@@ -19,6 +28,7 @@ export class SwipeWordsPlugin extends Plugin {
         this.activateView();
       }
     })
+    this.addSettingTab(new SwipeWordsluginSettingTab(this.app, this))
   }
 
   public override onunload = async () => {
@@ -26,9 +36,18 @@ export class SwipeWordsPlugin extends Plugin {
   }
 
   public loadSettings = async () => {
+    this.settings = Object.assign({},
+      DEFAULT_SETTINGS,
+      await this.loadData() as Partial<SwipeWordsPluginSettings>
+    );
   }
 
-  public saveSettings = async () => {
+  public saveSetting = async <
+    K extends keyof SwipeWordsPluginSettings,
+    V extends SwipeWordsPluginSettings[K]
+  >(key: K, value: V): Promise<void> => {
+    this.settings[key] = value;
+    await this.saveData(this.settings);
   }
 
   public activateView = async () => {

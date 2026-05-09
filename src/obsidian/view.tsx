@@ -2,11 +2,18 @@ import { ItemView, WorkspaceLeaf } from "obsidian";
 import { App } from "../App";
 import { createRoot, type Root } from "react-dom/client";
 import { StrictMode } from "react";
+import { RepositorynContext, UIAPIContext } from "./context";
+import { ObsidianRepository } from "./app";
+import type { OfferableSetting } from "@/main";
+import { ObsidianUI } from "./api";
 
 export const SwipeWordsViewType = "swipe-word-view"
 export class SwipeWordsView extends ItemView {
     private root?: Root
-    constructor(leaf: WorkspaceLeaf) {
+    constructor(
+        leaf: WorkspaceLeaf,
+        private readonly plugin: OfferableSetting,
+    ) {
         super(leaf);
     }
 
@@ -23,7 +30,11 @@ export class SwipeWordsView extends ItemView {
         this.root = createRoot(rootEl);
         this.root.render(
             <StrictMode>
-                <App />
+                <RepositorynContext value={new ObsidianRepository(this.app, this.plugin)}>
+                    <UIAPIContext value={new ObsidianUI()}>
+                        <App />
+                    </UIAPIContext>
+                </RepositorynContext>
             </StrictMode>
         );
     }

@@ -8,3 +8,4 @@ Bun.build({
   target: 'node',
   sourcemap: 'linked', // default 'none'
 });
+console.log("build src/main.ts")

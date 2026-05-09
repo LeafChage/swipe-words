@@ -4,13 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --hot build.ts",
-    "dev2": "bun --hot src/index.ts",
-    "build": "bun build ./src/index.html --outdir=dist --sourcemap --target=browser --minify --define:process.env.NODE_ENV='\"production\"' --env='BUN_PUBLIC_*'",
-    "build2": "bun run build:ts && bun run build:css",
+    "dev": "bun --hot src/index.ts",
+    "dev:obsidian": "bun --watch build.ts",
+    "build": "bun run build:ts && bun run build:css",
     "build:ts": "bun run ./build.ts",
-    "build:css": "tailwindcss -i ./src/index.css -o ./styles.css",
-    "start": "NODE_ENV=production bun src/index.ts"
+    "build:css": "tailwindcss -i ./src/index.css -o ./styles.css"
   },
   "dependencies": {
     "bulma": "^1.0.4",

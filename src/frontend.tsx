@@ -9,11 +9,17 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { App } from "./App";
+import { RepositorynContext, UIAPIContext } from "./obsidian/context";
 
 const elem = document.getElementById("root")!;
 const app = (
     <StrictMode>
-        <App />
+        {/* create context in the same as the obsidian plugin (view.tsx) */}
+        <RepositorynContext value={undefined}>
+            <UIAPIContext value={undefined}>
+                <App />
+            </UIAPIContext>
+        </RepositorynContext>
     </StrictMode>
 );
 

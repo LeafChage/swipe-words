@@ -1,13 +1,16 @@
 import { type FC } from "react";
-import { FlashCard, type FlashCardProps } from "./flash-card/flash-card";
-import { FlashCardEmpty } from "./flash-card/flash-card-empty";
+import { FlashCard, type FlashCardProps } from "./flash-card";
+import { FlashCardEmpty } from "./flash-card-empty";
 
 type FlashCardStackProps = {
     cards: FlashCardProps[];
-    onAction: (remember: boolean, id: string) => void,
+    onAction: (card: FlashCardProps, remember: boolean) => void,
 };
 
 export const FlashCardStack: FC<FlashCardStackProps> = ({ cards, onAction }) => {
+    const action = () => {
+        onAction();
+    }
     return (
         <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-indigo-50 p-6">
             {
@@ -31,8 +34,8 @@ export const FlashCardStack: FC<FlashCardStackProps> = ({ cards, onAction }) => 
                                         id={card.id}
                                         front={card.front}
                                         answer={card.answer}
-                                        onForget={() => onAction(false, card.id)}
-                                        onRemember={() => onAction(true, card.id)}
+                                        onForget={() => onAction(card, false)}
+                                        onRemember={() => onAction(card, true)}
                                     />
                                 </div>
                             );
