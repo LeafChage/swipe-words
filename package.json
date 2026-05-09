@@ -4,8 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --hot src/index.ts",
-    "dev:obsidian": "bun --watch build.ts",
+    "dev": "bun --watch build.ts",
     "build": "bun run build:ts && bun run build:css",
     "build:ts": "bun run ./build.ts",
     "build:css": "tailwindcss -i ./src/index.css -o ./styles.css"

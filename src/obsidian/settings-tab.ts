@@ -2,7 +2,7 @@ import { App, PluginSettingTab, Setting } from "obsidian";
 import { SwipeWordsPlugin, type SaveableSetting } from "../main";
 import { FolderSuggestion } from "./folder-suggestion";
 
-export class SwipeWordsluginSettingTab extends PluginSettingTab {
+export class SwipeWordsPluginSettingTab extends PluginSettingTab {
   private readonly plugin: SaveableSetting
   constructor(app: App, plugin: SwipeWordsPlugin) {
     super(app, plugin);

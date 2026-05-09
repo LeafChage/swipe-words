@@ -2,7 +2,7 @@ import { ItemView, WorkspaceLeaf } from "obsidian";
 import { App } from "../App";
 import { createRoot, type Root } from "react-dom/client";
 import { StrictMode } from "react";
-import { RepositorynContext, UIAPIContext } from "./context";
+import { RepositoryContext, UIAPIContext } from "./context";
 import { ObsidianRepository } from "./app";
 import type { OfferableSetting } from "@/main";
 import { ObsidianUI } from "./api";
@@ -30,11 +30,11 @@ export class SwipeWordsView extends ItemView {
         this.root = createRoot(rootEl);
         this.root.render(
             <StrictMode>
-                <RepositorynContext value={new ObsidianRepository(this.app, this.plugin)}>
+                <RepositoryContext value={new ObsidianRepository(this.app, this.plugin)}>
                     <UIAPIContext value={new ObsidianUI(this.app)}>
                         <App />
                     </UIAPIContext>
-                </RepositorynContext>
+                </RepositoryContext>
             </StrictMode>
         );
     }

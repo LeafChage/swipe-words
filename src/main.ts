@@ -1,7 +1,7 @@
 import { Plugin } from 'obsidian';
 import { SwipeWordsView, SwipeWordsViewType } from './obsidian/view';
 import { DEFAULT_SETTINGS, type SwipeWordsPluginSettings } from './obsidian/settings';
-import { SwipeWordsluginSettingTab } from './obsidian/settings-tab';
+import { SwipeWordsPluginSettingTab } from './obsidian/settings-tab';
 
 export interface OfferableSetting {
   settings: Partial<SwipeWordsPluginSettings>;
@@ -28,7 +28,7 @@ export class SwipeWordsPlugin extends Plugin implements SaveableSetting {
         this.activateView();
       }
     })
-    this.addSettingTab(new SwipeWordsluginSettingTab(this.app, this))
+    this.addSettingTab(new SwipeWordsPluginSettingTab(this.app, this))
   }
 
   public override onunload = async () => {

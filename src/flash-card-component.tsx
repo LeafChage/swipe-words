@@ -1,51 +1,41 @@
-import { use, useEffect, useState, type FC } from "react";
+import { use, type FC } from "react";
 import { FlashCardStack } from "./flash-card/flash-card-stack";
-import type { FlashCardProps } from "./flash-card/flash-card";
-import { RepositorynContext, UIAPIContext } from "./obsidian/context";
+import { RepositoryContext, UIAPIContext } from "./obsidian/context";
+import { useFlashCards } from "./hooks/useFlashCards";
 
 export const FlashCardComponent: FC = () => {
-    const obsidian = use(RepositorynContext);
+    const repository = use(RepositoryContext);
     const ui = use(UIAPIContext);
-    const [cards, setCards] = useState<FlashCardProps[]>([]);
 
-    useEffect(() => {
-        Promise.all(obsidian?.findForgotFiles().map(async file => {
-            return {
-                id: file.name,
-                front: await obsidian?.showQuizzFront(file),
-                answer: await obsidian?.showQuizzBack(file),
-                onForget: async () => {
-                    try {
-                        await obsidian?.forgot(file);
-                    } catch (e) {
-                        ui?.notice(`${e}`);
-                    }
-                },
-                onRemember: async () => {
-                    try {
-                        await obsidian?.remember(file);
-                    } catch (e) {
-                        ui?.notice(`${e}`);
-                    }
-                },
-            };
-        }) ?? [])
-            .then((files) => setCards(files))
-            .catch(e => {
-                console.error(e);
-            });
-    }, [obsidian]);
+    const { cards, isLoading, error, handleCardAction, showAnswerModal } =
+        useFlashCards(repository, ui);
 
-    const onAction = (card: FlashCardProps, remember: boolean) => {
-        if (remember) {
-            card.onRemember?.();
-        } else {
-            card.onForget?.();
-        }
-        setCards([...cards.slice(1)])
+    if (error) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-indigo-50">
+                <div className="rounded-3xl bg-white p-8 text-center shadow-xl">
+                    <h2 className="mb-2 text-2xl font-bold text-rose-600">Error</h2>
+                    <p className="text-slate-500">{error}</p>
+                </div>
+            </div>
+        );
     }
-    const showAnswerModal = (card: FlashCardProps) => {
-        ui?.markdownModal(card.answer).open();
+
+    if (isLoading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-indigo-50">
+                <div className="rounded-3xl bg-white p-8 text-center shadow-xl">
+                    <p className="text-slate-500">Loading cards...</p>
+                </div>
+            </div>
+        );
     }
-    return <FlashCardStack cards={cards} onAction={onAction} showAnswerModal={showAnswerModal} />
-}
+
+    return (
+        <FlashCardStack
+            cards={cards}
+            onAction={handleCardAction}
+            showAnswerModal={showAnswerModal}
+        />
+    );
+};
