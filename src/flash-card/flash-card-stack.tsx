@@ -5,12 +5,10 @@ import { FlashCardEmpty } from "./flash-card-empty";
 type FlashCardStackProps = {
     cards: FlashCardProps[];
     onAction: (card: FlashCardProps, remember: boolean) => void,
+    showAnswerModal: (card: FlashCardProps) => void,
 };
 
-export const FlashCardStack: FC<FlashCardStackProps> = ({ cards, onAction }) => {
-    const action = () => {
-        onAction();
-    }
+export const FlashCardStack: FC<FlashCardStackProps> = ({ cards, onAction, showAnswerModal }) => {
     return (
         <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-indigo-50 p-6">
             {
@@ -36,6 +34,7 @@ export const FlashCardStack: FC<FlashCardStackProps> = ({ cards, onAction }) => 
                                         answer={card.answer}
                                         onForget={() => onAction(card, false)}
                                         onRemember={() => onAction(card, true)}
+                                        onShowAnswer={() => showAnswerModal(card)}
                                     />
                                 </div>
                             );

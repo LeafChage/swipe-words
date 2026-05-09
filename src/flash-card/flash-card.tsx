@@ -9,6 +9,7 @@ type CardData = {
 };
 
 export type FlashCardProps = CardData & {
+    onShowAnswer?: () => void;
     onForget?: () => void;
     onRemember?: () => void;
 };
@@ -38,8 +39,7 @@ const getSwipeStyle = (direction: "right" | "left" | null) => {
 };
 
 
-export const FlashCard: FC<FlashCardProps> = ({ front, answer, onForget, onRemember }) => {
-    const [showAnswer, setShowAnswer] = useState(false);
+export const FlashCard: FC<FlashCardProps> = ({ front, onForget, onRemember, onShowAnswer }) => {
     const [flyDirection, setFlyDirection] =
         useState<"left" | "right" | null>(null);
 
@@ -62,11 +62,9 @@ export const FlashCard: FC<FlashCardProps> = ({ front, answer, onForget, onRemem
             className="flex h-[560px] w-full flex-col overflow-hidden rounded-[28px] bg-white shadow-2xl"
             style={getSwipeStyle(flyDirection)}
         >
-            <FlashCardBody front={front} answer={answer} showAnswer={showAnswer} />
+            <FlashCardBody msg={front} />
             <FlashCardActions
-                showAnswer={showAnswer}
-                onShow={() => setShowAnswer(true)}
-                onHide={() => setShowAnswer(false)}
+                onShow={() => onShowAnswer()}
                 onForget={() => swipeCard("left")}
                 onRemember={() => swipeCard("right")}
             />

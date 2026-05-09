@@ -44,5 +44,8 @@ export const FlashCardComponent: FC = () => {
         }
         setCards([...cards.slice(1)])
     }
-    return <FlashCardStack cards={cards} onAction={onAction} />
+    const showAnswerModal = (card: FlashCardProps) => {
+        ui?.markdownModal(card.answer).open();
+    }
+    return <FlashCardStack cards={cards} onAction={onAction} showAnswerModal={showAnswerModal} />
 }

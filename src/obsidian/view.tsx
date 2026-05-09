@@ -31,7 +31,7 @@ export class SwipeWordsView extends ItemView {
         this.root.render(
             <StrictMode>
                 <RepositorynContext value={new ObsidianRepository(this.app, this.plugin)}>
-                    <UIAPIContext value={new ObsidianUI()}>
+                    <UIAPIContext value={new ObsidianUI(this.app)}>
                         <App />
                     </UIAPIContext>
                 </RepositorynContext>
