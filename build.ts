@@ -1,11 +1,14 @@
+import { env } from "bun";
+
+const sourceMap: Bun.BuildConfig["sourcemap"] = env.NODE_ENV === "PRODUCTION" ? "none" : "linked";
+
 Bun.build({
   entrypoints: ['./src/main.ts'],
-  outdir: './',
+  outdir: './dist',
   external: [
     "obsidian",
   ],
   format: "cjs",
   target: 'node',
-  sourcemap: 'linked', // default 'none'
+  sourcemap: sourceMap,
 });
-console.log("build src/main.ts")

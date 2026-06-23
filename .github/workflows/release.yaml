@@ -28,11 +28,7 @@ jobs:
       - name: Build
         run: |
           bun install
-          bun run ./build.ts
-
-      - name: Making zip
-        run: |
-          zip swipe-card.zip main.js manifest.json
+          bun run build:release
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2

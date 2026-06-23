@@ -6,11 +6,14 @@
   "scripts": {
     "dev": "bun --watch build.ts",
     "build": "bun run build:ts && bun run build:css",
+    "build:release": "NODE_ENV=development bun run build && bun run package",
     "build:ts": "bun run ./build.ts",
-    "build:css": "tailwindcss -i ./src/index.css -o ./styles.css"
+    "build:css": "tailwindcss -i ./src/index.css -o ./dist/styles.css",
+    "package": "zip -j swipe-card.zip dist/main.js dist/main.css dist/styles.css manifest.json"
   },
   "dependencies": {
     "bulma": "^1.0.4",
+    "date-fns": "^4.4.0",
     "obsidian": "^1.12.3",
     "react": "^19",
     "react-dom": "^19"
