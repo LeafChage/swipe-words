@@ -2,16 +2,26 @@ import type { OfferableSetting } from "@/main";
 import type { App, TFile } from "obsidian";
 import { File } from "./x";
 import { XArray } from "@/x";
+import { ReviewState } from "@/core/review";
+import type { Rating } from "@/core/rating";
+import { ISODateString } from "@/core/iso-date-string";
 
 export interface IObsidianRepository {
   findAllFiles: () => TFile[],
-  findForgotFiles: () => TFile[],
-  remember: (file: TFile) => Promise<void>,
-  forgot: (file: TFile) => Promise<void>,
-  forgotAll: (file: TFile[]) => Promise<void>,
+  findDueFiles: () => TFile[],
+  rate: (file: TFile, rating: Rating) => Promise<void>,
   showQuizzFront: (file: TFile) => Promise<string>,
   showQuizzBack: (file: TFile) => Promise<string>,
 }
+
+// frontmatter keys ReviewState is persisted under
+const DUE_KEY = "sw-due";
+const INTERVAL_KEY = "sw-interval";
+const EASE_KEY = "sw-ease";
+
+// frontmatter keys a card's front/back are read from
+const FRONT_KEY = "front";
+const BACK_PREFIX = "back-";
 
 export class ObsidianRepository implements IObsidianRepository {
   public constructor(
@@ -28,52 +38,50 @@ export class ObsidianRepository implements IObsidianRepository {
     return File.loadFilesInFolder(promptDir);
   }
 
-  public findForgotFiles = (): TFile[] => {
-    const column = this.plugin.settings.column;
-    if (column === undefined) {
-      return [];
+  private readReviewState = (file: TFile): ReviewState => {
+    const fm = this.app.metadataCache.getFileCache(file)?.frontmatter;
+    const due = fm?.[DUE_KEY];
+    const intervalDays = fm?.[INTERVAL_KEY];
+    const ease = fm?.[EASE_KEY];
+
+    if (ISODateString.is(due) && typeof intervalDays === "number" && typeof ease === "number") {
+      return { cardId: file.path, due, intervalDays, ease };
     }
+    // never reviewed yet -> treat as due immediately
+    return ReviewState.new(file.path, new Date());
+  }
+
+  public findDueFiles = (): TFile[] => {
+    const now = new Date();
     return XArray.shuffle(this.findAllFiles().filter((file) => {
-      const cache = this.app.metadataCache.getFileCache(file);
-      return cache?.frontmatter?.[column] === false;
+      const state = this.readReviewState(file);
+      return ISODateString.toDate(state.due) <= now;
     }))
   }
 
-  private checkColumn = async (
-    file: TFile,
-    on: boolean
-  ): Promise<void> => {
-    const column = this.plugin.settings.column;
-    if (column !== undefined) {
-      await this.app.fileManager.processFrontMatter(file, (fm) => {
-        console.log(column, on);
-        fm[column] = on;
-      });
-    } else {
-      throw "the column to check memorizing is not defined"
-    }
-  }
+  public rate = async (file: TFile, rating: Rating): Promise<void> => {
+    const current = this.readReviewState(file);
+    const updated = ReviewState.updateSchedule(current, rating, new Date());
 
-  public remember = (file: TFile) => {
-    return this.checkColumn(file, true);
-  }
-
-  public forgot = (file: TFile) => {
-    return this.checkColumn(file, false);
-  }
-
-  public forgotAll = async (files: TFile[]) => {
-    return Promise.all(
-      files.map(f => this.checkColumn(f, false))
-    ).then(() => { });
+    await this.app.fileManager.processFrontMatter(file, (fm) => {
+      fm[DUE_KEY] = updated.due;
+      fm[INTERVAL_KEY] = updated.intervalDays;
+      fm[EASE_KEY] = updated.ease;
+    });
   }
 
   public showQuizzFront = (file: TFile): Promise<string> => {
-    return new Promise((f, _) => f(file.basename));
+    const fm = this.app.metadataCache.getFileCache(file)?.frontmatter;
+    return Promise.resolve(fm?.[FRONT_KEY]);
   }
 
   public showQuizzBack = (file: TFile): Promise<string> => {
-    return this.app.vault.read(file);
+    const fm = this.app.metadataCache.getFileCache(file)?.frontmatter ?? {};
+    const text = Object.keys(fm)
+      .filter((key) => key.startsWith(BACK_PREFIX))
+      .map((key) => `- **${key.slice(BACK_PREFIX.length)}**: ${fm[key]}`)
+      .join("\n");
+    return Promise.resolve(text);
   }
 }
 

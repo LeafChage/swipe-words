@@ -28,17 +28,6 @@ export class SwipeWordsPluginSettingTab extends PluginSettingTab {
 
         new FolderSuggestion(this.app, text.inputEl, onChange);
       });
-
-
-    new Setting(containerEl)
-      .setName("column")
-      .setDesc("it can be used for turn on the column in the file attributes")
-      .addText(text => text
-        .setValue(this.plugin.settings.column ?? "")
-        .onChange(async (value) => {
-          await this.plugin.saveSetting("column", value.trim());
-        })
-      );
   }
 }
 

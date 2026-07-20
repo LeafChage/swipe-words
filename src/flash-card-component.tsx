@@ -7,7 +7,7 @@ export const FlashCardComponent: FC = () => {
     const repository = use(RepositoryContext);
     const ui = use(UIAPIContext);
 
-    const { cards, isLoading, error, handleCardAction, showAnswerModal } =
+    const { cards, isLoading, error, handleCardAction } =
         useFlashCards(repository, ui);
 
     if (error) {
@@ -35,7 +35,6 @@ export const FlashCardComponent: FC = () => {
         <FlashCardStack
             cards={cards}
             onAction={handleCardAction}
-            showAnswerModal={showAnswerModal}
         />
     );
 };

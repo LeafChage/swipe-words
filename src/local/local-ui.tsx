@@ -1,7 +1,9 @@
 import type { UIAPI } from "@/obsidian/api";
 
 // Browser-only stand-in for ObsidianUI (Notice/Modal), used when running the
-// app outside of Obsidian (see frontend.tsx).
+// app outside of Obsidian (see frontend.tsx). markdownModal has no real
+// counterpart to call here (no Obsidian MarkdownRenderer available in the
+// browser), so this just dumps the plain text into a simple overlay.
 export class LocalUI implements UIAPI {
   public notice = (msg: string) => {
     console.log(`[notice] ${msg}`);

@@ -1,9 +1,12 @@
 import { addDays } from "date-fns"
-export type Rating = "again" | "hard" | "good" | "easy";
+import type { Rating } from "./rating";
+import { ISODateString } from "./iso-date-string";
 
 export type ReviewState = {
   cardId: string;
-  due: string;
+
+  due: ISODateString;
+
   intervalDays: number;
 
   /**
@@ -23,7 +26,7 @@ const updateIntervalAndEase = ({ intervalDays, ease }: Pick<ReviewState, "interv
   switch (rating) {
     case "again": {
       return {
-        intervalDays: 1,
+        intervalDays: 0,
         ease: Math.max(MinimumEase, ease - EaseControlBigGap)
       }
     }
@@ -49,6 +52,19 @@ const updateIntervalAndEase = ({ intervalDays, ease }: Pick<ReviewState, "interv
 }
 
 export const ReviewState = {
+  /**
+   * @returns a fresh, never-reviewed schedule that is due immediately
+   */
+  new: (cardId: string, now: Date): ReviewState => ({
+    cardId,
+    due: ISODateString.from(now),
+    intervalDays: 0,
+    ease: DefaultEase,
+  }),
+
+  /**
+   * @returns new schedule updated with rating
+   */
   updateSchedule: (card: ReviewState, rating: Rating, now: Date): ReviewState => {
     let { intervalDays, ease } = updateIntervalAndEase(card, rating);
 
@@ -56,7 +72,7 @@ export const ReviewState = {
       ...card,
       intervalDays,
       ease,
-      due: addDays(now, intervalDays).toISOString(),
+      due: ISODateString.from(addDays(now, intervalDays))
     };
   }
 } as const;

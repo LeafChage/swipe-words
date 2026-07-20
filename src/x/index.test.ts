@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { XArray } from "./";
+import { XArray} from "./";
 
 describe("array", () => {
   test("shuffle", () => {

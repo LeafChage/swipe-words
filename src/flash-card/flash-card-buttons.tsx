@@ -1,14 +1,16 @@
 import type { ComponentProps, FC } from "react";
 
-const buttonStyleMap: Record<"forgot" | "remember" | "show" | "hide", string> = {
-    forgot:
+const buttonStyleMap: Record<"again" | "hard" | "good" | "easy" | "show", string> = {
+    again:
         "bg-rose-50 text-rose-600 ring-rose-100 hover:bg-rose-100 hover:ring-rose-200",
-    remember:
+    hard:
+        "bg-amber-50 text-amber-600 ring-amber-100 hover:bg-amber-100 hover:ring-amber-200",
+    good:
         "bg-emerald-50 text-emerald-600 ring-emerald-100 hover:bg-emerald-100 hover:ring-emerald-200",
+    easy:
+        "bg-teal-50 text-teal-600 ring-teal-100 hover:bg-teal-100 hover:ring-teal-200",
     show:
         "bg-sky-50 text-sky-600 ring-sky-100 hover:bg-sky-100 hover:ring-sky-200",
-    hide:
-        "bg-slate-100 text-slate-600 ring-slate-200 hover:bg-slate-200 hover:ring-slate-300",
 };
 
 const generateFlashCardButton = (kind: keyof typeof buttonStyleMap):
@@ -28,8 +30,9 @@ const generateFlashCardButton = (kind: keyof typeof buttonStyleMap):
         );
     }
 
-export const ForgotButton = generateFlashCardButton("forgot");
-export const RememberButton = generateFlashCardButton("remember");
+export const AgainButton = generateFlashCardButton("again");
+export const HardButton = generateFlashCardButton("hard");
+export const GoodButton = generateFlashCardButton("good");
+export const EasyButton = generateFlashCardButton("easy");
 export const ShowButton = generateFlashCardButton("show");
-export const HideButton = generateFlashCardButton("hide");
 
