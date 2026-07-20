@@ -1,14 +1,14 @@
 import { type FC } from "react";
 import { FlashCard, type FlashCardProps } from "./flash-card";
 import { FlashCardEmpty } from "./flash-card-empty";
+import type { Rating } from "../core/rating";
 
 type FlashCardStackProps = {
     cards: FlashCardProps[];
-    onAction: (card: FlashCardProps, remember: boolean) => void,
-    showAnswerModal: (card: FlashCardProps) => void,
+    onAction: (card: FlashCardProps, rating: Rating) => void,
 };
 
-export const FlashCardStack: FC<FlashCardStackProps> = ({ cards, onAction, showAnswerModal }) => {
+export const FlashCardStack: FC<FlashCardStackProps> = ({ cards, onAction }) => {
     return (
         <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-indigo-50 p-6">
             {
@@ -32,9 +32,7 @@ export const FlashCardStack: FC<FlashCardStackProps> = ({ cards, onAction, showA
                                         id={card.id}
                                         front={card.front}
                                         answer={card.answer}
-                                        onForget={() => onAction(card, false)}
-                                        onRemember={() => onAction(card, true)}
-                                        onShowAnswer={() => showAnswerModal(card)}
+                                        onRate={(rating) => onAction(card, rating)}
                                     />
                                 </div>
                             );

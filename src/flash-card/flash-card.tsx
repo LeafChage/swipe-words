@@ -1,6 +1,7 @@
 import { useState, type FC } from "react";
 import { FlashCardBody } from "./flash-card-body";
 import { FlashCardActions } from "./flash-card-actions";
+import type { Rating } from "../core/rating";
 
 type CardData = {
     id: string;
@@ -9,9 +10,7 @@ type CardData = {
 };
 
 export type FlashCardProps = CardData & {
-    onShowAnswer?: () => void;
-    onForget?: () => void;
-    onRemember?: () => void;
+    onRate?: (rating: Rating) => void;
 };
 
 const getSwipeStyle = (direction: "right" | "left" | null) => {
@@ -38,21 +37,20 @@ const getSwipeStyle = (direction: "right" | "left" | null) => {
     };
 };
 
+// again/hard fly off to the left, good/easy fly off to the right
+const directionForRating = (rating: Rating): "left" | "right" =>
+    rating === "again" || rating === "hard" ? "left" : "right";
 
-export const FlashCard: FC<FlashCardProps> = ({ front, onForget, onRemember, onShowAnswer }) => {
+export const FlashCard: FC<FlashCardProps> = ({ front, answer, onRate }) => {
     const [flyDirection, setFlyDirection] =
         useState<"left" | "right" | null>(null);
+    const [isFlipped, setIsFlipped] = useState(false);
 
-    const swipeCard = (direction: "left" | "right") => {
-        setFlyDirection(direction);
+    const rateCard = (rating: Rating) => {
+        setFlyDirection(directionForRating(rating));
 
         window.setTimeout(() => {
-            if (direction === "left") {
-                onForget?.();
-            } else {
-                onRemember?.();
-            }
-
+            onRate?.(rating);
             setFlyDirection(null);
         }, 220);
     };
@@ -62,15 +60,11 @@ export const FlashCard: FC<FlashCardProps> = ({ front, onForget, onRemember, onS
             className="flex h-[560px] w-full flex-col overflow-hidden rounded-[28px] bg-white shadow-2xl"
             style={getSwipeStyle(flyDirection)}
         >
-            <FlashCardBody msg={front} />
+            <FlashCardBody front={front} answer={answer} isFlipped={isFlipped} />
             <FlashCardActions
-                onShow={() => onShowAnswer()}
-                onForget={() => swipeCard("left")}
-                onRemember={() => swipeCard("right")}
+                onShow={() => setIsFlipped((flipped) => !flipped)}
+                onRate={rateCard}
             />
         </div>
     );
 };
-
-
-

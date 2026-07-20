@@ -1,2 +1,5 @@
-@import "tailwindcss";
+/* !important on every utility: Obsidian's own core/theme CSS is unlayered
+   and otherwise beats any of our @layer-wrapped Tailwind CSS regardless of
+   specificity, since unlayered author CSS always outranks layered CSS. */
+@import "tailwindcss" important;
 

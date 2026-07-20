@@ -1,36 +1,48 @@
 import type { TFile } from "obsidian";
+import { addDays } from "date-fns";
 import type { IObsidianRepository } from "@/obsidian/app";
+import type { Rating } from "@/core/rating";
+import { ReviewState } from "@/core/review";
+import { ISODateString } from "@/core/iso-date-string";
 import { XArray } from "@/x";
 
 /**
  * Fixture shape for seeding LocalRepository — deliberately smaller than
  * TFile since nothing outside obsidian/app.ts and obsidian/x.ts touches
- * TFile fields besides `.name`/`.basename` (see useFlashCards.tsx).
+ * TFile fields besides `.name`/`.basename`/`.path` (see useFlashCards.tsx).
  */
 export interface LocalCardFixture {
   basename: string;
   back: string;
-  remembered?: boolean;
+  review?: ReviewState;
 }
 
 interface LocalCard {
   basename: string;
   back: string;
-  remembered: boolean;
+  review: ReviewState;
 }
 
 export const DEFAULT_LOCAL_FIXTURES: LocalCardFixture[] = [
-  { basename: "apple", back: "りんご\n\nA common, round fruit with red, green, or yellow skin." },
-  { basename: "run", back: "走る (はしる)\n\nTo move at a speed faster than a walk." },
-  { basename: "library", back: "図書館 (としょかん)\n\nA place where books are kept for people to read or borrow." },
-  { basename: "beautiful", back: "美しい (うつくしい)\n\nPleasing to look at; attractive." },
-  { basename: "decision", back: "決断 (けつだん)\n\nA conclusion or resolution reached after consideration." },
-  { basename: "already remembered example", back: "This one starts out marked as remembered.", remembered: true },
+  { basename: "apple", back: "- **意味**: りんご\n- **例文**: A common, round fruit with red, green, or yellow skin." },
+  { basename: "run", back: "- **意味**: 走る (はしる)\n- **例文**: To move at a speed faster than a walk." },
+  { basename: "library", back: "- **意味**: 図書館 (としょかん)\n- **例文**: A place where books are kept for people to read or borrow." },
+  { basename: "beautiful", back: "- **意味**: 美しい (うつくしい)\n- **例文**: Pleasing to look at; attractive." },
+  { basename: "decision", back: "- **意味**: 決断 (けつだん)\n- **例文**: A conclusion or resolution reached after consideration." },
+  {
+    basename: "not due yet example",
+    back: "- **note**: This one is already scheduled a few days out, so it should not show up in the due list.",
+    review: {
+      ...ReviewState.new("not due yet example", new Date()),
+      due: ISODateString.from(addDays(new Date(), 5)),
+      intervalDays: 5,
+    },
+  },
 ];
 
 // A fake TFile carries just enough shape for the UI to key off of
-// (`.name`/`.basename`); it is never passed through the real `obsidian`
-// module, so it's safe to construct as a plain object and cast.
+// (`.name`/`.basename`/`.path`); it is never passed through the real
+// `obsidian` module, so it's safe to construct as a plain object and cast.
 const toTFile = (card: LocalCard): TFile => ({
   path: card.basename,
   name: card.basename,
@@ -45,7 +57,7 @@ export class LocalRepository implements IObsidianRepository {
     this.cards = fixtures.map((f) => ({
       basename: f.basename,
       back: f.back,
-      remembered: f.remembered ?? false,
+      review: f.review ?? ReviewState.new(f.basename, new Date()),
     }));
   }
 
@@ -61,24 +73,17 @@ export class LocalRepository implements IObsidianRepository {
     return this.cards.map(toTFile);
   }
 
-  public findForgotFiles = (): TFile[] => {
-    return XArray.shuffle(this.cards.filter((c) => !c.remembered)).map(toTFile);
+  public findDueFiles = (): TFile[] => {
+    const now = new Date();
+    const due = this.cards.filter((c) => ISODateString.toDate(c.review.due) <= now);
+    console.log("[LocalRepository] due:", due.map((c) => ({ basename: c.basename, ...c.review })));
+    return XArray.shuffle(due).map(toTFile);
   }
 
-  private checkColumn = async (file: TFile, on: boolean): Promise<void> => {
-    this.findCard(file).remembered = on;
-  }
-
-  public remember = (file: TFile) => {
-    return this.checkColumn(file, true);
-  }
-
-  public forgot = (file: TFile) => {
-    return this.checkColumn(file, false);
-  }
-
-  public forgotAll = async (files: TFile[]) => {
-    return Promise.all(files.map((f) => this.checkColumn(f, false))).then(() => { });
+  public rate = async (file: TFile, rating: Rating): Promise<void> => {
+    const card = this.findCard(file);
+    card.review = ReviewState.updateSchedule(card.review, rating, new Date());
+    console.log("[LocalRepository] rated", rating, "->", card.basename, card.review);
   }
 
   public showQuizzFront = (file: TFile): Promise<string> => {
