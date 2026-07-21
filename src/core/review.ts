@@ -66,7 +66,7 @@ export const ReviewState = {
    * @returns new schedule updated with rating
    */
   updateSchedule: (card: ReviewState, rating: Rating, now: Date): ReviewState => {
-    let { intervalDays, ease } = updateIntervalAndEase(card, rating);
+    const { intervalDays, ease } = updateIntervalAndEase(card, rating);
 
     return {
       ...card,

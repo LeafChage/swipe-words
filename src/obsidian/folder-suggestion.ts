@@ -8,7 +8,7 @@ export class FolderSuggestion extends AbstractInputSuggest<TFolder> {
   public constructor(
     public override readonly app: App,
     private readonly inputEl: HTMLInputElement,
-    private readonly onChange: (v: string) => any
+    private readonly onChange: (v: string) => void
   ) {
     super(app, inputEl);
   }
