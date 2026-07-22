@@ -24,6 +24,7 @@ jobs:
       - name: Build
         run: |
           bun install
+          bun run lint
           bun run build:release
 
       - name: Create release

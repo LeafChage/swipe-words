@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "lint": "eslint ./src/**/*.{tsx,ts}",
+    "lint": "eslint ./src/**/*.{tsx,ts} && bun run tsc --noEmit",
     "dev": "bun --watch build.ts",
     "dev:web": "bun --hot ./src/index.html",
     "build": "bun run build:ts && bun run build:css",
@@ -26,12 +26,11 @@
     "@types/bun": "latest",
     "@types/react": "~18",
     "@types/react-dom": "~18",
-    "@typescript-eslint/eslint-plugin": "^8.65.0",
-    "@typescript-eslint/parser": "^8.65.0",
     "bun-plugin-tailwind": "^0.1.2",
     "eslint": "^10.7.0",
     "globals": "^17.7.0",
     "tailwindcss": "^4.2.4",
-    "typescript": "npm:@typescript/typescript6"
+    "typescript": "npm:@typescript/typescript6",
+    "typescript-eslint": "^8.65.0"
   }
 }

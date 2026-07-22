@@ -1,11 +1,11 @@
-import { use, type FC } from "react";
+import { useContext, type FC } from "react";
 import { FlashCardStack } from "./flash-card/flash-card-stack";
 import { RepositoryContext, UIAPIContext } from "./obsidian/context";
 import { useFlashCards } from "./hooks/useFlashCards";
 
 export const FlashCardComponent: FC = () => {
-    const repository = use(RepositoryContext);
-    const ui = use(UIAPIContext);
+    const repository = useContext(RepositoryContext);
+    const ui = useContext(UIAPIContext);
 
     const { cards, isLoading, error, handleCardAction } =
         useFlashCards(repository, ui);

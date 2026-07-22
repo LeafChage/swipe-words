@@ -18,11 +18,11 @@ const app = (
     <StrictMode>
         {/* create context in the same shape as the obsidian plugin (view.tsx),
             backed by in-memory fixtures instead of a real vault */}
-        <RepositoryContext value={new LocalRepository()}>
-            <UIAPIContext value={new LocalUI()}>
+        <RepositoryContext.Provider value={new LocalRepository()}>
+            <UIAPIContext.Provider value={new LocalUI()}>
                 <App />
-            </UIAPIContext>
-        </RepositoryContext>
+            </UIAPIContext.Provider>
+        </RepositoryContext.Provider>
     </StrictMode>
 );
 

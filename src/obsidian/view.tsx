@@ -30,11 +30,11 @@ export class SwipeWordsView extends ItemView {
         this.root = createRoot(rootEl);
         this.root.render(
             <StrictMode>
-                <RepositoryContext value={new ObsidianRepository(this.app, this.plugin)}>
-                    <UIAPIContext value={new ObsidianUI(this.app)}>
+                <RepositoryContext.Provider value={new ObsidianRepository(this.app, this.plugin)}>
+                    <UIAPIContext.Provider value={new ObsidianUI(this.app)}>
                         <App />
-                    </UIAPIContext>
-                </RepositoryContext>
+                    </UIAPIContext.Provider>
+                </RepositoryContext.Provider>
             </StrictMode>
         );
     }

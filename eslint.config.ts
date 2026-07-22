@@ -5,5 +5,10 @@ import { defineConfig } from "eslint/config";
 export default defineConfig([
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  {
+    rules: {
+      '@typescript-eslint/no-namespace': 'warn',
+    }
+  }
 ]);
 
